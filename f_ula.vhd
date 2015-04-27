@@ -16,7 +16,7 @@ entity f_ULA is
 end f_ULA;
 
 architecture TB of f_ULA is
-	signal 	coutSomaSub, overFMultAx2, selectSomaSub, overFAddSub: std_logic;
+	signal 	coutSomaSub, coutInc, overFMultAx2, selectSomaSub, overFAddSub: std_logic;
 	signal 	resSomaSub, resComplementoA, resComplementoB, resXor, resNand, resOr,
 				somaOuSub, resCompB, resMultX2, incA, vlrBIncA : std_logic_vector(7 downto 0);
 	signal SH, SL : std_logic_vector(3 downto 0);
@@ -32,20 +32,19 @@ begin
 															over_F => overFAddSub);
 	MultX2	:	entity work.mult_x2	port map(A => A, V => overFMultAx2, S => resMultX2);
 	Incr_A	: 	entity work.f_adder	port map(A => A, B => vlrBIncA, S => incA, 
-															cout => coutSomaSub, op => selectSomaSub);
+															cout => coutInc, op => selectSomaSub);
 	-- Parte Logica
-	Comp_A		: 	entity work.f_comp	port map(A => A, S => resComplementoA);
-	Comp_B		: 	entity work.f_comp	port map(A => B, S => resComplementoB);
+	Comp_A	: 	entity work.f_comp	port map(A => A, S => resComplementoA);
+	Comp_B	: 	entity work.f_comp	port map(A => B, S => resComplementoB);
 	X_Or		: 	entity work.f_xor 	port map(A => A, B => B, S => resXor);
 	NaoE		:	entity work.f_nand	port map(A => A, B => B, S => resNand);
-	Ou			:	entity work.f_or 	port map(A => A, B => B, S => resOr);
+	Ou			:	entity work.f_or 		port map(A => A, B => B, S => resOr);
 			
 	somaOuSub <= resComplementoB when OP = "001" else B; 
 	selectSomaSub <= '0' when OP = "000" else '1';
 	vlrBIncA <= "00000000";
 	
-	process(resSomaSub, resComplementoA, resXor, resNand, resOr, OP, 
-																						coutsomasub, overfaddsub, coutsomasub, resmultx2, overfmultax2, inca)
+	process(resSomaSub, resComplementoA, resXor, resNand, resOr, OP)
 	begin
 		case OP is
 			when  "000"  =>  
@@ -73,6 +72,7 @@ begin
 							C <= '0';
 			when  "011" =>  
 							S <= incA; 
+							C <= coutInc;
 							Z <= not(incA(0) or incA(1) or incA(2) or incA(3) 
 										or incA(4) or incA(5) or incA(6) or incA(7));
 							V <= '0';

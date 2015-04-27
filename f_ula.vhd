@@ -19,20 +19,12 @@ architecture TB of f_ULA is
 	signal 	coutSomaSub, overFMultAx2, selectSomaSub, overFAddSub: std_logic;
 	signal 	resSomaSub, resComplementoA, resComplementoB, resXor, resNand, resOr,
 				somaOuSub, resCompB, resMultX2, incA, vlrBIncA : std_logic_vector(7 downto 0);
-	signal 	EntradaCodSignal1, EntradaCodSignal2, SaidaCodSignal1, SaidaCodSignal2 : std_logic_vector(3 downto 0);
-				
+	signal SH, SL : std_logic_vector(3 downto 0);
 begin
 	
-	
-	--Codificadores
-	EntradaCodSignal1 <= S(7 downto 4);
-	EntradaCodSignal2 <= S(3 downto 0);
-	Codificador1: entity work.cod port map(EntradaCod => EntradaCodSignal1, SaidaCod => SaidaCodSignal1);
-	Codificador2: entity work.cod port map(EntradaCod => EntradaCodSignal2, SaidaCod => SaidaCodSignal2);
-	
 	--Displays de 14 segmentos
-	Display1: entity work.display port map(Entrada => SaidaCodSignal1);
-	Display2: entity work.display port map(Entrada => SaidaCodSignal2);
+	Display1: entity work.display port map(Entrada => SH);
+	Display2: entity work.display port map(Entrada => SL);
 	
 	-- Parte Aritmetica
 	Add_Sub	:	entity work.f_adder	port map(A => A, B => somaOuSub, S => resSomaSub, 
@@ -52,7 +44,8 @@ begin
 	selectSomaSub <= '0' when OP = "000" else '1';
 	vlrBIncA <= "00000000";
 	
-	process(resSomaSub, resComplementoA, resXor, resNand, resOr, OP)
+	process(resSomaSub, resComplementoA, resXor, resNand, resOr, OP, 
+																						coutsomasub, overfaddsub, coutsomasub, resmultx2, overfmultax2, inca)
 	begin
 		case OP is
 			when  "000"  =>  
